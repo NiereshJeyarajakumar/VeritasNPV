@@ -1,432 +1,360 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <title>Reliability NPV Tool — Veritas Reliability</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <style>
-:root { 
-  --blue:#0B1C36;
-  --gold:#C2965B;
-  --green:#22C55E;
-  --red:#EF4444;
-}
+*,*::before,*::after{box-sizing:border-box}
+body{font-family:Arial,system-ui,sans-serif;margin:20px;background:#fff;color:#000}
 
-/* ===== Base ===== */
-body {
-  font-family:Arial, sans-serif;
-  background:#fff;
-  color:#000;
-  max-width:1100px;
-  margin:36px auto;
-  line-height:1.35;
-}
+/* ===== CARDS ===== */
+.card{background:#F2F2F2;border:1px solid #e2e2e2;border-radius:14px;padding:22px 24px;margin-bottom:18px}
+.inner-card{background:#fff;border:1px solid #e2e2e2;border-radius:12px;padding:16px}
 
-.muted { color:#333; font-size:12px; }
+h3{margin:0 0 6px;font-size:1.1rem}
+.muted{font-size:13px;color:#555;margin-bottom:12px}
+.desc{font-size:12px;color:#666;margin-top:4px}
 
-/* ===== Card Headers ===== */
-.card-header {
-  background:var(--blue);
-  color:var(--gold);
-  padding:12px 16px;
-  margin:-18px -18px 16px -18px;
-  border-radius:10px 10px 0 0;
-  font-size:17px;
-  font-weight:700;
-}
+/* ===== INPUTS ===== */
+.row{display:grid;grid-template-columns:1fr 180px;gap:14px;margin:12px 0}
+label{font-weight:600}
+input[type=number]{width:100%;padding:10px;border-radius:8px;border:1px solid #d0d0d0}
 
-/* ===== Cards ===== */
-.card {
-  border:1px solid var(--blue);
-  border-radius:10px;
-  background:#fff;
-  padding:18px;
-  margin-bottom:20px;
-}
+/* ===== BUTTONS ===== */
+.actions{display:flex;gap:10px}
+button{background:#000;color:#fff;border:1px solid #000;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer}
 
-label { font-weight:600; color:var(--blue); }
+/* ===== KPIs ===== */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.kpi{background:#fff;border:1px solid #e2e2e2;border-radius:12px;padding:14px}
+.kpi .label{font-size:12px;color:#666}
+.kpi .value{font-size:18px;font-weight:700}
 
-.row {
-  display:grid;
-  grid-template-columns:1fr 140px;
-  gap:10px;
-  align-items:center;
-  margin:8px 0;
-}
+/* ===== CHART TABS ===== */
+.chart-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chart-tabs button{background:#fff;color:#000;border:1px solid #000;border-radius:999px;padding:8px 16px;font-weight:700}
+.chart-tabs button.active{background:#000;color:#fff}
+.chart-wrap{display:none}
+.chart-wrap.active{display:block}
 
-input[type="number"], textarea {
-  width:100%;
-  padding:8px 10px;
-  border:1px solid var(--blue);
-  border-radius:8px;
-  background:transparent;
-  color:#000;
-  box-sizing:border-box;
-}
-
-textarea {
-  min-height:100px;
-  resize:vertical;
-}
-
-/* ===== Buttons ===== */
-button {
-  background:var(--gold);
-  color:var(--blue);
-  border:1px solid var(--blue);
-  border-radius:10px;
-  padding:10px 14px;
-  font-size:14px;
-  font-weight:400;
-  cursor:pointer;
-}
-button:hover { opacity:0.85; }
-button.secondary { background:var(--blue); color:var(--gold); }
-
-/* ===== KPI Tiles ===== */
-.kpis {
-  display:grid;
-  gap:10px;
-}
-@media(min-width:720px){
-  .kpis { grid-template-columns:repeat(4,1fr); }
-}
-
-.kpi {
-  border:1px solid var(--blue);
-  border-radius:10px;
-  padding:12px;
-}
-.kpi .label { font-size:12px; color:var(--blue); }
-.kpi .value { font-weight:700; font-size:18px; margin-top:4px; }
-
-/* ===== Tables ===== */
-table {
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-  font-size:13px;
-}
-th,td {
-  border:1px solid var(--blue);
-  padding:8px;
-  text-align:right;
-}
-th {
-  background:var(--blue);
-  color:var(--gold);
-  font-weight:700;
-}
-td.label,th.label { text-align:left; }
-
-.summary-line { margin:4px 0; font-size:14px; }
-.summary-line span { font-weight:700; }
-.up { color:var(--red); }
-.down { color:var(--green); }
+/* ===== TABLE ===== */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid #d0d0d0;padding:8px;text-align:right}
+th{background:#000;color:#fff}
+td.label,th.label{text-align:left}
 </style>
 </head>
 
 <body>
 
-<!-- REMOVED FIRST CARD as requested -->
+<!-- ================= GLOBAL SETTINGS ================= -->
+<div class="card">
+<h3>Global Analysis Settings</h3>
+<p class="muted">Financial assumptions applied consistently across the evaluation horizon.</p>
 
-<div class="grid grid-2">
-  <div class="card">
-    <div class="card-header">1) Global Analysis Settings</div>
-    <div class="row"><label>Analysis Horizon (years)</label><input id="horizon" type="number" value="10"></div>
-    <div class="row"><label>Discount Rate (% p.a.)</label><input id="discount" type="number" value="10" step="0.1"></div>
-    <div class="row"><label>Escalation Rate (% p.a.)</label><input id="escalation" type="number" value="2.5" step="0.1"></div>
-    <div class="row"><label>Salvage / Residual at End (+)</label><input id="salvage" type="number" value="0"></div>
+<div class="row">
+  <div>
+    <label>Analysis Horizon (years)</label>
+    <div class="desc">Total period over which costs and benefits are evaluated.</div>
   </div>
+  <input id="horizon" type="number" value="10">
+</div>
 
-  <div class="card">
-    <div class="card-header">2) Project Inputs (Incremental vs Current)</div>
-    <div class="row"><label>CapEx at t=0</label><input id="capex" type="number" value="-250000"></div>
-    <div class="row"><label>PM Cost (Current)</label><input id="pmBefore" type="number" value="120000"></div>
-    <div class="row"><label>PM Cost (After)</label><input id="pmAfter" type="number" value="140000"></div>
-    <div class="row"><label>Failure Cost (Current)</label><input id="failBefore" type="number" value="400000"></div>
-    <div class="row"><label>Failure Cost (After)</label><input id="failAfter" type="number" value="260000"></div>
-    <div class="row"><label>Downtime Cost / Hour</label><input id="dtCost" type="number" value="5000"></div>
-    <div class="row"><label>Downtime Hours Reduced / Year</label><input id="dtHoursSaved" type="number" value="30"></div>
-    <div class="row"><label>Other Benefits (+)</label><input id="otherBen" type="number" value="0"></div>
-    <div class="row"><label>Other Costs (−)</label><input id="otherCost" type="number" value="0"></div>
+<div class="row">
+  <div>
+    <label>Discount Rate (% p.a.)</label>
+    <div class="desc">Used to discount future cash flows to present value.</div>
   </div>
+  <input id="discount" type="number" value="10">
 </div>
 
-<div class="card">
-  <div class="card-header">3) Project Notes / Comments</div>
-  <textarea id="projectNotes" placeholder="Enter key assumptions, equipment details, or context for this NPV analysis..."></textarea>
-</div>
-
-<div class="card">
-  <div class="card-header">4) Incremental Summary</div>
-  <div id="incrementalSummary" class="muted">Click <b>Calculate</b> to show the yearly incremental cost and savings summary.</div>
-</div>
-
-<div class="card">
-  <div class="actions" style="display:flex;gap:10px;flex-wrap:wrap;">
-    <button id="btnCalc">Calculate</button>
-    <button id="btnExport" class="secondary">Export CSV</button>
+<div class="row">
+  <div>
+    <label>Escalation Rate (% p.a.)</label>
+    <div class="desc">Annual growth applied to operating costs and benefits.</div>
   </div>
+  <input id="escalation" type="number" value="2.5">
+</div>
 
-  <div class="kpis" style="margin-top:12px;">
-    <div class="kpi"><div class="label">NPV</div><div class="value" id="kpiNPV">—</div></div>
-    <div class="kpi"><div class="label">IRR</div><div class="value" id="kpiIRR">—</div></div>
-    <div class="kpi"><div class="label">Payback (yrs)</div><div class="value" id="kpiPB">—</div></div>
-    <div class="kpi"><div class="label">B/C Ratio</div><div class="value" id="kpiBCR">—</div></div>
+<div class="row">
+  <div>
+    <label>Salvage Value</label>
+    <div class="desc">Residual value realised at the end of the analysis horizon.</div>
   </div>
+  <input id="salvage" type="number" value="0">
+</div>
 </div>
 
-<!-- ****** STACKED CHARTS (NO SIDE-BY-SIDE) ****** -->
+<!-- ================= PROJECT INPUTS ================= -->
 <div class="card">
-  <div class="card-header">Cash Flow Chart</div>
-  <canvas id="cfChart" height="260"></canvas>
+<h3>Project Inputs (Incremental vs Current)</h3>
+<p class="muted">Differences between the current and proposed maintenance strategies.</p>
+
+<div class="row">
+  <div><label>CapEx at t = 0</label><div class="desc">Initial capital investment required.</div></div>
+  <input id="capex" type="number" value="-250000">
 </div>
 
-<div class="card">
-  <div class="card-header">NPV Sensitivity</div>
-  <div class="row"><label>From (%)</label><input id="sensFrom" type="number" value="0"></div>
-  <div class="row"><label>To (%)</label><input id="sensTo" type="number" value="25"></div>
-  <canvas id="sensChart" height="260" style="margin-top:10px;"></canvas>
+<div class="row">
+  <div><label>Annual PM Cost (Current)</label><div class="desc">Recurring planned maintenance expenditure under the current strategy.</div></div>
+  <input id="pmAnnualBefore" type="number" value="120000">
 </div>
 
+<div class="row">
+  <div><label>Annual PM Cost (After)</label><div class="desc">Recurring planned maintenance expenditure after implementation.</div></div>
+  <input id="pmAnnualAfter" type="number" value="140000">
+</div>
+
+<div class="row">
+  <div><label>Planned PM Cost (Current)</label><div class="desc">Cost of periodic planned maintenance events.</div></div>
+  <input id="pmPlannedBefore" type="number" value="300000">
+</div>
+
+<div class="row">
+  <div><label>Planned PM Frequency (Current, yrs)</label><div class="desc">Interval between planned maintenance events.</div></div>
+  <input id="pmFreqBefore" type="number" value="5">
+</div>
+
+<div class="row">
+  <div><label>Planned PM Cost (After)</label><div class="desc">Planned maintenance cost after change.</div></div>
+  <input id="pmPlannedAfter" type="number" value="200000">
+</div>
+
+<div class="row">
+  <div><label>Planned PM Frequency (After, yrs)</label><div class="desc">Interval between planned maintenance events after change.</div></div>
+  <input id="pmFreqAfter" type="number" value="6">
+</div>
+
+<div class="row">
+  <div><label>Failure Cost (Current)</label><div class="desc">Annual cost of unplanned failures.</div></div>
+  <input id="failBefore" type="number" value="400000">
+</div>
+
+<div class="row">
+  <div><label>Failure Cost (After)</label><div class="desc">Expected failure cost after improvement.</div></div>
+  <input id="failAfter" type="number" value="260000">
+</div>
+
+<div class="row">
+  <div><label>Downtime Cost / Hour</label><div class="desc">Value of lost production per hour of downtime.</div></div>
+  <input id="dtCost" type="number" value="5000">
+</div>
+
+<div class="row">
+  <div><label>Downtime Hours Saved / Year</label><div class="desc">Expected reduction in downtime hours per year.</div></div>
+  <input id="dtSaved" type="number" value="30">
+</div>
+
+<div class="row">
+  <div><label>Other Benefits</label><div class="desc">Additional quantified benefits.</div></div>
+  <input id="otherBen" type="number" value="0">
+</div>
+
+<div class="row">
+  <div><label>Other Costs</label><div class="desc">Additional quantified costs.</div></div>
+  <input id="otherCost" type="number" value="0">
+</div>
+</div>
+
+<!-- ================= ACTIONS & KPIs ================= -->
 <div class="card">
-  <div class="card-header">Cash Flow Table (Incremental)</div>
-  <div id="tableWrap"></div>
+<div class="actions">
+<button id="calc">Calculate</button>
+<button id="clear">Clear</button>
+</div>
+
+<div class="kpis">
+<div class="kpi"><div class="label">NPV</div><div class="value" id="npv">—</div></div>
+<div class="kpi"><div class="label">Payback (yrs)</div><div class="value" id="pb">—</div></div>
+<div class="kpi"><div class="label">B/C Ratio</div><div class="value" id="bcr">—</div></div>
+</div>
+</div>
+
+<!-- ================= CHARTS ================= -->
+<div class="card">
+<h3>Charts</h3>
+<div class="chart-tabs">
+<button class="active" data-t="cf">Cash Flow</button>
+<button data-t="cum">Cumulative Cash Flow</button>
+<button data-t="cco">Cost of Ownership</button>
+<button data-t="disc">NPV Sensitivity</button>
+</div>
+
+<div id="cf" class="chart-wrap active"><div class="inner-card"><canvas id="cfChart"></canvas></div></div>
+<div id="cum" class="chart-wrap"><div class="inner-card"><canvas id="cumChart"></canvas></div></div>
+<div id="cco" class="chart-wrap"><div class="inner-card"><canvas id="ccoChart"></canvas></div></div>
+<div id="disc" class="chart-wrap"><div class="inner-card"><canvas id="discChart"></canvas></div></div>
+</div>
+
+<!-- ================= RESULTS TABLE ================= -->
+<div class="card">
+<h3>Results Data Table</h3>
+<p class="muted">Year-by-year incremental cash flow and present value results.</p>
+<div class="inner-card">
+<div id="resultsTable">Click <b>Calculate</b> to generate results.</div>
+</div>
 </div>
 
 <script>
-/* ---------- Math helpers ---------- */
-function fmtCurrency(x){return (x<0?"−$":"$")+Math.abs(x).toLocaleString();}
-function fmtPct(x){return x.toFixed(2)+"%";}
-function npv(r,cf){return cf.reduce((s,v,i)=>s+v/Math.pow(1+r,i),0);}
+const $=id=>document.getElementById(id);
+let charts={};
 
-function irr(cf){
-  const f=(r)=>cf.reduce((s,v,i)=>s+v/Math.pow(1+r,i),0);
-  let a=-0.9,b=10.0,fa=f(a),fb=f(b);
-  if(fa*fb>0){
-    for(let x=0;x<=10;x+=0.5){
-      fa=f(x);fb=f(x+0.5);
-      if(isFinite(fa)&&isFinite(fb)&&fa*fb<=0){a=x;b=x+0.5;break;}
+function solidLegend(){
+  return {
+    labels:{
+      usePointStyle:true,
+      generateLabels(chart){
+        const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+        labels.forEach(l=>{
+          const ds = chart.data.datasets[l.datasetIndex];
+          const c = ds.backgroundColor || ds.borderColor;
+          l.fillStyle = c;
+          l.strokeStyle = c;
+          l.lineWidth = 0;
+        });
+        return labels;
+      }
+    }
+  };
+}
+
+function calcPayback(cum){
+  for(let i=1;i<cum.length;i++){
+    if(cum[i]>=0){
+      const prev=cum[i-1];
+      const frac=(0-prev)/(cum[i]-prev);
+      return (i-1+frac).toFixed(2);
     }
   }
-  if(!isFinite(fa)||!isFinite(fb)||fa*fb>0)return NaN;
-  for(let i=0;i<80;i++){
-    const m=(a+b)/2,fm=f(m);
-    if(!isFinite(fm)||Math.abs(fm)<1e-10)return m;
-    if(fa*fm<=0){b=m;fb=fm;} else {a=m;fa=fm;}
-  }
-  return (a+b)/2;
+  return "—";
 }
 
-function payback(cf,r){
-  let cum=0;
-  for(let t=0;t<cf.length;t++){
-    const pv=cf[t]/Math.pow(1+r,t);
-    const prev=cum;
-    cum+=pv;
-    if(cum>=0){
-      if(pv===0)return t;
-      const frac=(0-prev)/pv;
-      return (t-1)+frac+1;
-    }
+$("calc").onclick=()=>{
+  Object.values(charts).forEach(c=>c?.destroy());
+
+  const h=+$("horizon").value,d=+$("discount").value/100,e=+$("escalation").value/100;
+  let y=[0],cf=[+$("capex").value],pv=[+$("capex").value],cum=[+$("capex").value],nom=[+$("capex").value];
+  let ccoCur=[0],ccoProp=[0];
+
+  for(let i=1;i<=h;i++){
+    const esc=Math.pow(1+e,i-1);
+
+    const annualPM=(+$("pmAnnualAfter").value-+$("pmAnnualBefore").value)*esc;
+    let planned=0;
+    if(+$("pmFreqAfter").value<=h && i%+$("pmFreqAfter").value===0) planned+=+$("pmPlannedAfter").value;
+    if(+$("pmFreqBefore").value<=h && i%+$("pmFreqBefore").value===0) planned-=+$("pmPlannedBefore").value;
+    planned*=esc;
+
+    const fail=(+$("failBefore").value-+$("failAfter").value)*esc;
+    const dt=+$("dtCost").value*+$("dtSaved").value*esc;
+    const other=(+$("otherBen").value-+$("otherCost").value)*esc;
+
+    let c=fail+dt+other-(annualPM+planned);
+    if(i===h) c+=+$("salvage").value;
+
+    y.push(i);cf.push(c);
+    pv.push(c/Math.pow(1+d,i));
+    cum.push(cum.at(-1)+pv.at(-1));
+    nom.push(nom.at(-1)+c);
+
+    const curCost=(+$("pmAnnualBefore").value+(i%+$("pmFreqBefore").value===0?+$("pmPlannedBefore").value:0)+ +$("failBefore").value)*esc;
+    const propCost=(+$("pmAnnualAfter").value+(i%+$("pmFreqAfter").value===0?+$("pmPlannedAfter").value:0)+ +$("failAfter").value-+$("dtCost").value*+$("dtSaved").value)*esc;
+
+    ccoCur.push(ccoCur.at(-1)+curCost/Math.pow(1+d,i));
+    ccoProp.push(ccoProp.at(-1)+propCost/Math.pow(1+d,i));
   }
-  return NaN;
-}
 
-function bcr(cf,r){
-  let ben=0,cost=0;
-  for(let t=0;t<cf.length;t++){
-    const pv=cf[t]/Math.pow(1+r,t);
-    if(pv>=0)ben+=pv; else cost+=-pv;
+  $("npv").textContent="$"+pv.reduce((a,b)=>a+b,0).toFixed(0);
+  $("pb").textContent=calcPayback(cum);
+  $("bcr").textContent=(pv.filter(v=>v>0).reduce((a,b)=>a+b,0)/Math.abs(pv.filter(v=>v<0).reduce((a,b)=>a+b,0))).toFixed(2);
+
+  charts.cf=new Chart($("cfChart"),{
+    data:{labels:y,datasets:[
+      {type:"bar",label:"Cash Flow",data:cf,backgroundColor:"#C2965B"},
+      {type:"line",label:"Cumulative PV",data:cum,borderColor:"#000",borderWidth:2}
+    ]},
+    options:{plugins:{legend:solidLegend()}}
+  });
+
+  charts.cum=new Chart($("cumChart"),{
+    type:"line",
+    data:{labels:y,datasets:[
+      {label:"Nominal",data:nom,borderColor:"#9CA3AF"},
+      {label:"Discounted",data:cum,borderColor:"#000"}
+    ]},
+    options:{plugins:{legend:solidLegend()}}
+  });
+
+  charts.cco=new Chart($("ccoChart"),{
+    type:"line",
+    data:{labels:y,datasets:[
+      {label:"Current Strategy",data:ccoCur,borderColor:"#9CA3AF"},
+      {label:"Proposed Strategy",data:ccoProp,borderColor:"#000"}
+    ]},
+    options:{plugins:{legend:solidLegend()}}
+  });
+
+  let r=[],n=[];
+  for(let x=0;x<=25;x++){
+    r.push(x);
+    n.push(cf.reduce((s,v,i)=>s+v/Math.pow(1+x/100,i),0));
   }
-  if(cost===0)return NaN;
-  return ben/cost;
-}
 
-function buildCF(i){
-  let y=[0],cf=[i.capex],pv=[i.capex],cum=[i.capex];
-  for(let yr=1;yr<=i.horizon;yr++){
-    let esc=Math.pow(1+i.escalation,yr-1);
-    let pm=(i.pmAfter-i.pmBefore)*esc;
-    let fail=(i.failBefore-i.failAfter)*esc;
-    let dt=i.dtCost*i.dtHoursSaved*esc;
-    let ben=i.otherBen*esc,oc=i.otherCost*esc;
-    let c=fail+dt+ben-(pm+oc);
-    if(yr===i.horizon)c+=i.salvage;
-    cf.push(c);pv.push(c/Math.pow(1+i.discount,yr));cum.push(cum[cum.length-1]+pv[pv.length-1]);y.push(yr);
+  charts.disc=new Chart($("discChart"),{
+    type:"line",
+    data:{labels:r,datasets:[
+      {label:"NPV vs Discount Rate",data:n,borderColor:"#C2965B",borderWidth:2}
+    ]},
+    options:{plugins:{legend:solidLegend()}}
+  });
+
+  let html="<table><tr><th class='label'>Year</th><th>Cash Flow</th><th>PV</th><th>Cumulative PV</th></tr>";
+  for(let i=0;i<y.length;i++){
+    html+=`<tr>
+      <td class="label">${y[i]}</td>
+      <td>$${cf[i].toFixed(0)}</td>
+      <td>$${pv[i].toFixed(0)}</td>
+      <td>$${cum[i].toFixed(0)}</td>
+    </tr>`;
   }
-  return{y,cf,pv,cum};
-}
-
-/* ---------- Rendering ---------- */
-let cfChart=null,sensChart=null;
-function render(){
-
-const i={
-  horizon:+horizon.value,
-  discount:+discount.value/100,
-  escalation:+escalation.value/100,
-  capex:+capex.value,
-  pmBefore:+pmBefore.value,
-  pmAfter:+pmAfter.value,
-  failBefore:+failBefore.value,
-  failAfter:+failAfter.value,
-  dtCost:+dtCost.value,
-  dtHoursSaved:+dtHoursSaved.value,
-  otherBen:+otherBen.value,
-  otherCost:+otherCost.value,
-  salvage:+salvage.value
+  $("resultsTable").innerHTML=html+"</table>";
 };
 
-const deltaPM=i.pmAfter-i.pmBefore;
-const deltaFail=i.failBefore-i.failAfter;
-const dtBenefit=i.dtCost*i.dtHoursSaved;
+$("clear").onclick=()=>location.reload();
 
-const deltaOtherBen=i.otherBen;
-const deltaOtherCost=i.otherCost;
-
-const totalAnnual=(deltaFail+dtBenefit+deltaOtherBen)-(deltaPM+deltaOtherCost);
-
-let summaryHTML=
-  `<div class='summary-line'><span class='${deltaPM>0?'up':'down'}'>PM ${deltaPM>0?'↑':'↓'} ${fmtCurrency(Math.abs(deltaPM))}</span></div>`+
-  `<div class='summary-line'><span class='${deltaFail>0?'down':'up'}'>Failures ${deltaFail>0?'↓':'↑'} ${fmtCurrency(Math.abs(deltaFail))}</span></div>`+
-  `<div class='summary-line'><span class='down'>Downtime ↓ ${fmtCurrency(dtBenefit)}</span></div>`;
-
-if(deltaOtherBen!==0)
-  summaryHTML+=`<div class='summary-line'><span class='${deltaOtherBen>0?'down':'up'}'>Other Benefits ${deltaOtherBen>0?'↓':'↑'} ${fmtCurrency(Math.abs(deltaOtherBen))}</span></div>`;
-
-if(deltaOtherCost!==0)
-  summaryHTML+=`<div class='summary-line'><span class='${deltaOtherCost>0?'up':'down'}'>Other Costs ${deltaOtherCost>0?'↑':'↓'} ${fmtCurrency(Math.abs(deltaOtherCost))}</span></div>`;
-
-summaryHTML+=`<hr><div class='summary-line'><b>Net Incremental Effect:</b> <span class='${totalAnnual>=0?'down':'up'}'>${totalAnnual>=0?'+':'−'}${fmtCurrency(Math.abs(totalAnnual))} per year</span></div>`;
-
-incrementalSummary.innerHTML=summaryHTML;
-
-/* ---------- Build CF ---------- */
-const {y,cf,pv,cum}=buildCF(i);
-
-const npvVal=pv.reduce((a,b)=>a+b,0);
-const irrVal=irr(cf);
-const pbVal=payback(cf,i.discount);
-const bcrVal=bcr(cf,i.discount);
-
-/* ---------- KPI Update ---------- */
-kpiNPV.textContent=fmtCurrency(npvVal);
-kpiIRR.textContent=isNaN(irrVal)?"—":fmtPct(irrVal*100);
-kpiPB.textContent=isNaN(pbVal)?"—":pbVal.toFixed(1);
-kpiBCR.textContent=isNaN(bcrVal)?"—":bcrVal.toFixed(2);
-
-/* ---------- Table ---------- */
-let html=`<table><tr><th>Year</th><th>CF</th><th>PV</th><th>Cum PV</th></tr>`;
-for(let j=0;j<y.length;j++){
-  html+=`<tr><td>${y[j]}</td><td>${fmtCurrency(cf[j])}</td><td>${fmtCurrency(pv[j])}</td><td>${fmtCurrency(cum[j])}</td></tr>`;
-}
-tableWrap.innerHTML=html+"</table>";
-
-/* ---------- Charts ---------- */
-if(cfChart) cfChart.destroy();
-cfChart=new Chart(document.getElementById('cfChart').getContext('2d'),{
-  data:{
-    labels:y,
-    datasets:[
-      { 
-        type:'bar',
-        label:'Cash Flow',
-        data:cf,
-        backgroundColor:'#C2965B',
-        borderWidth:0
-      },
-      { 
-        type:'line',
-        label:'Cumulative PV',
-        data:cum,
-        borderColor:'#000000',
-        backgroundColor:'#000000',
-        borderWidth:2,
-        pointRadius:3,
-        fill:false
-      }
-    ]
-  },
-  options:{
-    plugins:{ legend:{ labels:{ usePointStyle:true, boxWidth:14, boxHeight:14 }}},
-    scales:{ 
-      x:{ title:{display:true,text:'Year'}},
-      y:{ title:{display:true,text:'$'}}
-    }
-  }
-});
-
-/* ---------- Sensitivity ---------- */
-const f=+sensFrom.value, t=+sensTo.value; 
-let sr=[], sn=[];
-for(let r=f; r<=t; r+=1){ sr.push(r); sn.push(npv(r/100,cf)); }
-
-if(sensChart) sensChart.destroy();
-sensChart=new Chart(document.getElementById('sensChart').getContext('2d'),{
-  type:'line',
-  data:{
-    labels:sr,
-    datasets:[{
-      label:'NPV vs Discount',
-      data:sn,
-      borderColor:'#C2965B',
-      backgroundColor:'#C2965B',
-      borderWidth:2,
-      pointRadius:3,
-      fill:false
-    }]
-  },
-  options:{
-    plugins:{ legend:{ labels:{ usePointStyle:true, boxWidth:14, boxHeight:14 }}},
-    scales:{ 
-      x:{ title:{display:true,text:'Discount Rate (%)'}},
-      y:{ title:{display:true,text:'NPV ($)'}}
-    }
-  }
-});
-}
-
-/* ---------- Export CSV ---------- */
-function exportCSV(){
-  const i={
-    horizon:+horizon.value,discount:+discount.value/100,escalation:+escalation.value/100,
-    capex:+capex.value,pmBefore:+pmBefore.value,pmAfter:+pmAfter.value,
-    failBefore:+failBefore.value,failAfter:+failAfter.value,
-    dtCost:+dtCost.value,dtHoursSaved:+dtHoursSaved.value,
-    otherBen:+otherBen.value,otherCost:+otherCost.value,salvage:+salvage.value
+document.querySelectorAll(".chart-tabs button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".chart-tabs button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.querySelectorAll(".chart-wrap").forEach(w=>w.classList.remove("active"));
+    document.getElementById(b.dataset.t).classList.add("active");
+    Object.values(charts).forEach(c=>c && c.resize());
   };
-
-  const {y,cf,pv,cum}=buildCF(i);
-  let csv="Year,CF,PV,CumPV\n"+y.map((v,k)=>`${v},${cf[k]},${pv[k]},${cum[k]}`).join("\n");
-
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download='reliability_npv.csv';
-  a.click();
-}
-
-/* ---------- Button Listeners ---------- */
-btnCalc.addEventListener('click',render);
-btnExport.addEventListener('click',exportCSV);
-
-/* ---------- Blank Charts on Load ---------- */
-window.addEventListener('load',()=>{
-  cfChart=new Chart(document.getElementById('cfChart'),{
-    type:'bar',
-    data:{labels:[],datasets:[]},
-    options:{}
-  });
-  sensChart=new Chart(document.getElementById('sensChart'),{
-    type:'line',
-    data:{labels:[],datasets:[]},
-    options:{}
-  });
 });
 </script>
+<script>
+  let heightTimeout;
 
+  function sendHeight() {
+    clearTimeout(heightTimeout);
+    heightTimeout = setTimeout(() => {
+      const height = document.documentElement.scrollHeight;
+      window.parent.postMessage({ height }, "*");
+    }, 50);
+  }
+
+  window.addEventListener("load", sendHeight);
+  window.addEventListener("resize", sendHeight);
+
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true
+  });
+</script>
 </body>
 </html>
