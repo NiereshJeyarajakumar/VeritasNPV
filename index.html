@@ -28,7 +28,10 @@ input[type=number]{width:100%;padding:10px;border-radius:8px;border:1px solid #d
 button{background:#000;color:#fff;border:1px solid #000;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer}
 
 /* ===== KPIs ===== */
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+@media (max-width: 820px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
 .kpi{background:#fff;border:1px solid #e2e2e2;border-radius:12px;padding:14px}
 .kpi .label{font-size:12px;color:#666}
 .kpi .value{font-size:18px;font-weight:700}
@@ -56,34 +59,22 @@ td.label,th.label{text-align:left}
 <p class="muted">Financial assumptions applied consistently across the evaluation horizon.</p>
 
 <div class="row">
-  <div>
-    <label>Analysis Horizon (years)</label>
-    <div class="desc">Total period over which costs and benefits are evaluated.</div>
-  </div>
+  <div><label>Analysis Horizon (years)</label><div class="desc">Total period over which costs and benefits are evaluated.</div></div>
   <input id="horizon" type="number" value="10">
 </div>
 
 <div class="row">
-  <div>
-    <label>Discount Rate (% p.a.)</label>
-    <div class="desc">Used to discount future cash flows to present value.</div>
-  </div>
+  <div><label>Discount Rate (% p.a.)</label><div class="desc">Used to discount future cash flows to present value.</div></div>
   <input id="discount" type="number" value="10">
 </div>
 
 <div class="row">
-  <div>
-    <label>Escalation Rate (% p.a.)</label>
-    <div class="desc">Annual growth applied to operating costs and benefits.</div>
-  </div>
+  <div><label>Escalation Rate (% p.a.)</label><div class="desc">Annual growth applied to operating costs and benefits.</div></div>
   <input id="escalation" type="number" value="2.5">
 </div>
 
 <div class="row">
-  <div>
-    <label>Salvage Value</label>
-    <div class="desc">Residual value realised at the end of the analysis horizon.</div>
-  </div>
+  <div><label>Salvage Value</label><div class="desc">Residual value realised at the end of the analysis horizon.</div></div>
   <input id="salvage" type="number" value="0">
 </div>
 </div>
@@ -93,70 +84,19 @@ td.label,th.label{text-align:left}
 <h3>Project Inputs (Incremental vs Current)</h3>
 <p class="muted">Differences between the current and proposed maintenance strategies.</p>
 
-<div class="row">
-  <div><label>CapEx at t = 0</label><div class="desc">Initial capital investment required.</div></div>
-  <input id="capex" type="number" value="-250000">
-</div>
-
-<div class="row">
-  <div><label>Annual PM Cost (Current)</label><div class="desc">Recurring planned maintenance expenditure under the current strategy.</div></div>
-  <input id="pmAnnualBefore" type="number" value="120000">
-</div>
-
-<div class="row">
-  <div><label>Annual PM Cost (After)</label><div class="desc">Recurring planned maintenance expenditure after implementation.</div></div>
-  <input id="pmAnnualAfter" type="number" value="140000">
-</div>
-
-<div class="row">
-  <div><label>Planned PM Cost (Current)</label><div class="desc">Cost of periodic planned maintenance events.</div></div>
-  <input id="pmPlannedBefore" type="number" value="300000">
-</div>
-
-<div class="row">
-  <div><label>Planned PM Frequency (Current, yrs)</label><div class="desc">Interval between planned maintenance events.</div></div>
-  <input id="pmFreqBefore" type="number" value="5">
-</div>
-
-<div class="row">
-  <div><label>Planned PM Cost (After)</label><div class="desc">Planned maintenance cost after change.</div></div>
-  <input id="pmPlannedAfter" type="number" value="200000">
-</div>
-
-<div class="row">
-  <div><label>Planned PM Frequency (After, yrs)</label><div class="desc">Interval between planned maintenance events after change.</div></div>
-  <input id="pmFreqAfter" type="number" value="6">
-</div>
-
-<div class="row">
-  <div><label>Failure Cost (Current)</label><div class="desc">Annual cost of unplanned failures.</div></div>
-  <input id="failBefore" type="number" value="400000">
-</div>
-
-<div class="row">
-  <div><label>Failure Cost (After)</label><div class="desc">Expected failure cost after improvement.</div></div>
-  <input id="failAfter" type="number" value="260000">
-</div>
-
-<div class="row">
-  <div><label>Downtime Cost / Hour</label><div class="desc">Value of lost production per hour of downtime.</div></div>
-  <input id="dtCost" type="number" value="5000">
-</div>
-
-<div class="row">
-  <div><label>Downtime Hours Saved / Year</label><div class="desc">Expected reduction in downtime hours per year.</div></div>
-  <input id="dtSaved" type="number" value="30">
-</div>
-
-<div class="row">
-  <div><label>Other Benefits</label><div class="desc">Additional quantified benefits.</div></div>
-  <input id="otherBen" type="number" value="0">
-</div>
-
-<div class="row">
-  <div><label>Other Costs</label><div class="desc">Additional quantified costs.</div></div>
-  <input id="otherCost" type="number" value="0">
-</div>
+<div class="row"><div><label>CapEx at t = 0</label><div class="desc">Initial capital investment required.</div></div><input id="capex" type="number" value="-250000"></div>
+<div class="row"><div><label>Annual PM Cost (Current)</label><div class="desc">Recurring planned maintenance expenditure under the current strategy.</div></div><input id="pmAnnualBefore" type="number" value="120000"></div>
+<div class="row"><div><label>Annual PM Cost (After)</label><div class="desc">Recurring planned maintenance expenditure after implementation.</div></div><input id="pmAnnualAfter" type="number" value="140000"></div>
+<div class="row"><div><label>Planned PM Cost (Current)</label><div class="desc">Cost of periodic planned maintenance events.</div></div><input id="pmPlannedBefore" type="number" value="300000"></div>
+<div class="row"><div><label>Planned PM Frequency (Current, yrs)</label><div class="desc">Interval between planned maintenance events.</div></div><input id="pmFreqBefore" type="number" value="5"></div>
+<div class="row"><div><label>Planned PM Cost (After)</label><div class="desc">Planned maintenance cost after change.</div></div><input id="pmPlannedAfter" type="number" value="200000"></div>
+<div class="row"><div><label>Planned PM Frequency (After, yrs)</label><div class="desc">Interval between planned maintenance events after change.</div></div><input id="pmFreqAfter" type="number" value="6"></div>
+<div class="row"><div><label>Failure Cost (Current)</label><div class="desc">Annual cost of unplanned failures.</div></div><input id="failBefore" type="number" value="400000"></div>
+<div class="row"><div><label>Failure Cost (After)</label><div class="desc">Expected failure cost after improvement.</div></div><input id="failAfter" type="number" value="260000"></div>
+<div class="row"><div><label>Downtime Cost / Hour</label><div class="desc">Value of lost production per hour of downtime.</div></div><input id="dtCost" type="number" value="5000"></div>
+<div class="row"><div><label>Downtime Hours Saved / Year</label><div class="desc">Expected reduction in downtime hours per year.</div></div><input id="dtSaved" type="number" value="30"></div>
+<div class="row"><div><label>Other Benefits</label><div class="desc">Additional quantified benefits.</div></div><input id="otherBen" type="number" value="0"></div>
+<div class="row"><div><label>Other Costs</label><div class="desc">Additional quantified costs.</div></div><input id="otherCost" type="number" value="0"></div>
 </div>
 
 <!-- ================= ACTIONS & KPIs ================= -->
@@ -167,9 +107,10 @@ td.label,th.label{text-align:left}
 </div>
 
 <div class="kpis">
-<div class="kpi"><div class="label">NPV</div><div class="value" id="npv">—</div></div>
-<div class="kpi"><div class="label">Payback (yrs)</div><div class="value" id="pb">—</div></div>
-<div class="kpi"><div class="label">B/C Ratio</div><div class="value" id="bcr">—</div></div>
+  <div class="kpi"><div class="label">NPV</div><div class="value" id="npv">—</div></div>
+  <div class="kpi"><div class="label">Payback (yrs)</div><div class="value" id="pb">—</div></div>
+  <div class="kpi"><div class="label">B/C Ratio</div><div class="value" id="bcr">—</div></div>
+  <div class="kpi"><div class="label">IRR</div><div class="value" id="irr">—</div></div>
 </div>
 </div>
 
@@ -232,8 +173,25 @@ function calcPayback(cum){
   return "—";
 }
 
+function calcIRR(cf){
+  const hasPos=cf.some(v=>v>0), hasNeg=cf.some(v=>v<0);
+  if(!hasPos||!hasNeg) return null;
+  let r=0.1;
+  for(let i=0;i<500;i++){
+    let f=0,df=0;
+    for(let t=0;t<cf.length;t++){
+      f+=cf[t]/Math.pow(1+r,t);
+      if(t>0) df-=t*cf[t]/Math.pow(1+r,t+1);
+    }
+    if(Math.abs(f)<1e-6) return r;
+    r-=f/df;
+  }
+  return null;
+}
+
 $("calc").onclick=()=>{
   Object.values(charts).forEach(c=>c?.destroy());
+  charts={};
 
   const h=+$("horizon").value,d=+$("discount").value/100,e=+$("escalation").value/100;
   let y=[0],cf=[+$("capex").value],pv=[+$("capex").value],cum=[+$("capex").value],nom=[+$("capex").value];
@@ -244,8 +202,8 @@ $("calc").onclick=()=>{
 
     const annualPM=(+$("pmAnnualAfter").value-+$("pmAnnualBefore").value)*esc;
     let planned=0;
-    if(+$("pmFreqAfter").value<=h && i%+$("pmFreqAfter").value===0) planned+=+$("pmPlannedAfter").value;
-    if(+$("pmFreqBefore").value<=h && i%+$("pmFreqBefore").value===0) planned-=+$("pmPlannedBefore").value;
+    if(i%+$("pmFreqAfter").value===0) planned+=+$("pmPlannedAfter").value;
+    if(i%+$("pmFreqBefore").value===0) planned-=+$("pmPlannedBefore").value;
     planned*=esc;
 
     const fail=(+$("failBefore").value-+$("failAfter").value)*esc;
@@ -269,14 +227,24 @@ $("calc").onclick=()=>{
 
   $("npv").textContent="$"+pv.reduce((a,b)=>a+b,0).toFixed(0);
   $("pb").textContent=calcPayback(cum);
-  $("bcr").textContent=(pv.filter(v=>v>0).reduce((a,b)=>a+b,0)/Math.abs(pv.filter(v=>v<0).reduce((a,b)=>a+b,0))).toFixed(2);
+  const posPV=pv.filter(v=>v>0).reduce((a,b)=>a+b,0);
+  const negPV=pv.filter(v=>v<0).reduce((a,b)=>a+b,0);
+  $("bcr").textContent=(negPV===0)?"—":(posPV/Math.abs(negPV)).toFixed(2);
+  const irr=calcIRR(cf);
+  $("irr").textContent=(irr===null)?"—":(irr*100).toFixed(1)+"%";
 
   charts.cf=new Chart($("cfChart"),{
     data:{labels:y,datasets:[
       {type:"bar",label:"Cash Flow",data:cf,backgroundColor:"#C2965B"},
       {type:"line",label:"Cumulative PV",data:cum,borderColor:"#000",borderWidth:2}
     ]},
-    options:{plugins:{legend:solidLegend()}}
+    options:{
+      plugins:{legend:solidLegend()},
+      scales:{
+        x:{title:{display:true,text:"Year"}},
+        y:{title:{display:true,text:"Cash Flow / Present Value ($)"}}
+      }
+    }
   });
 
   charts.cum=new Chart($("cumChart"),{
@@ -285,7 +253,13 @@ $("calc").onclick=()=>{
       {label:"Nominal",data:nom,borderColor:"#9CA3AF"},
       {label:"Discounted",data:cum,borderColor:"#000"}
     ]},
-    options:{plugins:{legend:solidLegend()}}
+    options:{
+      plugins:{legend:solidLegend()},
+      scales:{
+        x:{title:{display:true,text:"Year"}},
+        y:{title:{display:true,text:"Cumulative Cash Flow ($)"}}
+      }
+    }
   });
 
   charts.cco=new Chart($("ccoChart"),{
@@ -294,7 +268,13 @@ $("calc").onclick=()=>{
       {label:"Current Strategy",data:ccoCur,borderColor:"#9CA3AF"},
       {label:"Proposed Strategy",data:ccoProp,borderColor:"#000"}
     ]},
-    options:{plugins:{legend:solidLegend()}}
+    options:{
+      plugins:{legend:solidLegend()},
+      scales:{
+        x:{title:{display:true,text:"Year"}},
+        y:{title:{display:true,text:"Cumulative Cost of Ownership ($, PV)"}}
+      }
+    }
   });
 
   let r=[],n=[];
@@ -308,17 +288,18 @@ $("calc").onclick=()=>{
     data:{labels:r,datasets:[
       {label:"NPV vs Discount Rate",data:n,borderColor:"#C2965B",borderWidth:2}
     ]},
-    options:{plugins:{legend:solidLegend()}}
+    options:{
+      plugins:{legend:solidLegend()},
+      scales:{
+        x:{title:{display:true,text:"Discount Rate (%)"}},
+        y:{title:{display:true,text:"Net Present Value ($)"}}
+      }
+    }
   });
 
   let html="<table><tr><th class='label'>Year</th><th>Cash Flow</th><th>PV</th><th>Cumulative PV</th></tr>";
   for(let i=0;i<y.length;i++){
-    html+=`<tr>
-      <td class="label">${y[i]}</td>
-      <td>$${cf[i].toFixed(0)}</td>
-      <td>$${pv[i].toFixed(0)}</td>
-      <td>$${cum[i].toFixed(0)}</td>
-    </tr>`;
+    html+=`<tr><td class="label">${y[i]}</td><td>$${cf[i].toFixed(0)}</td><td>$${pv[i].toFixed(0)}</td><td>$${cum[i].toFixed(0)}</td></tr>`;
   }
   $("resultsTable").innerHTML=html+"</table>";
 };
